@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spam Shield | AI SMS Detector</title>
+    <meta name="description" content="Instantly detect whether an SMS message is Spam or Ham with our AI-powered classifier.">
+    <link rel="stylesheet" href="/public/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+    
+    <main class="container">
+        <header>
+            <h1>Spam <span>Shield</span></h1>
+            <p>Advanced AI-powered SMS classifier.</p>
+        </header>
+
+        <section class="detector-card glass-panel">
+            <form id="spam-form">
+                <div class="input-group">
+                    <label for="message-input">Message Content</label>
+                    <textarea id="message-input" name="message" placeholder="Type or paste the SMS message here..." required rows="4"></textarea>
+                </div>
+                <button type="submit" id="submit-btn" class="glow-on-hover">
+                    <span class="btn-text">Analyze Message</span>
+                    <span class="spinner hidden"></span>
+                </button>
+            </form>
+
+            <div id="result-container" class="result-container hidden">
+                <div class="result-header">
+                    <h2>Analysis Result</h2>
+                </div>
+                <div class="result-badge-wrapper">
+                    <div id="prediction-badge" class="badge"></div>
+                </div>
+                <div class="confidence-wrapper">
+                    <p>Confidence Score</p>
+                    <div class="progress-bar-container">
+                        <div id="confidence-bar" class="progress-bar"></div>
+                    </div>
+                    <span id="confidence-text" class="confidence-value"></span>
+                </div>
+            </div>
+        </section>
+        
+        <footer>
+            <p>&copy; 2026 AI Demo Application. Built for precision.</p>
+        </footer>
+    </main>
+    <script src="/public/script.js"></script>
+</body>
+</html>

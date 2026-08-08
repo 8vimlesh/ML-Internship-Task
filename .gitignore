@@ -1,0 +1,6 @@
+__pycache__/
+.env
+SMSSpamCollection
+*.zip
+*.joblib
+.ipynb_checkpoints/
