@@ -2,6 +2,8 @@
 
 *Note: You can copy and paste the contents of this markdown file into a Word Document, insert your screenshots where indicated, and save as PDF to submit.*
 
+**GitHub Repository Link:** [https://github.com/8vimlesh/ML-Internship-Task](https://github.com/8vimlesh/ML-Internship-Task)
+
 ---
 
 ## 1. Project Description
@@ -21,6 +23,8 @@ I built an end-to-end Machine Learning pipeline to detect SMS spam messages usin
 ## 2. Screenshots of Code, Charts & Output
 
 ### 2.1 Code Implementation
+
+```python
 import os
 import urllib.request
 import zipfile
@@ -122,11 +126,18 @@ def train_and_compare_models():
     print("Saved successfully!")
 
 if __name__ == "__main__":
-    download_data()
     train_and_compare_models()
+```
 
+### 2.2 Results & Visualizations (Confusion Matrices)
 
+![Naive Bayes](naive_bayes_cm.png)
 
+![Logistic Regression](logistic_regression_cm.png)
+
+### 2.3 The Final App in Action
+
+![Spam Shield App](app_screenshot.png)
 
 ## Key Insights & Recommendations
 
