@@ -10,22 +10,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score, precision_score, recall_score, confusion_matrix
 import joblib
 
-DATA_URL = "https://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip"
-ZIP_FILE = "smsspamcollection.zip"
-DATA_FILE = "SMSSpamCollection"
+DATA_FILE = "spam.csv"
 MODEL_FILE = "model.joblib"
 VECTORIZER_FILE = "vectorizer.joblib"
-
-def download_data():
-    if not os.path.exists(DATA_FILE):
-        print("Downloading dataset...")
-        urllib.request.urlretrieve(DATA_URL, ZIP_FILE)
-        print("Extracting dataset...")
-        with zipfile.ZipFile(ZIP_FILE, 'r') as zip_ref:
-            zip_ref.extractall(".")
-        os.remove(ZIP_FILE)
-    else:
-        print("Dataset already exists.")
 
 def clean_text(text):
     """Clean the SMS text: lowercase, remove special characters and extra spaces."""
@@ -37,8 +24,17 @@ def clean_text(text):
     return text
 
 def train_and_compare_models():
-    print("Loading data...")
-    df = pd.read_csv(DATA_FILE, sep='\t', header=None, names=['label', 'message'])
+    print("Loading data from Kaggle dataset...")
+    if not os.path.exists(DATA_FILE):
+        print(f"Error: {DATA_FILE} not found. Please download it from Kaggle and place it in this folder.")
+        return
+        
+    df = pd.read_csv(DATA_FILE, encoding='latin-1')
+    
+    # The Kaggle dataset uses 'v1' for label and 'v2' for the message
+    df = df[['v1', 'v2']]
+    df.columns = ['label', 'message']
+    
     print(f"Original Data shape: {df.shape}")
     
     # 1. Clean data
@@ -99,5 +95,4 @@ def train_and_compare_models():
     print("Saved successfully!")
 
 if __name__ == "__main__":
-    download_data()
     train_and_compare_models()
