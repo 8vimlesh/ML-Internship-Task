@@ -1,67 +1,47 @@
-import os
-from fastapi import FastAPI, HTTPException
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
-from pydantic import BaseModel
+import streamlit as st
 import joblib
 import re
+import os
 
-app = FastAPI()
+st.set_page_config(page_title="Spam Detector", page_icon="🛡️")
 
-# Mount the static directory
-app.mount("/public", StaticFiles(directory="public"), name="public")
+st.title("🛡️ SMS Spam Detector")
+st.write("Type a message below to instantly detect if it's Spam or Ham!")
 
-# Define the request body schema
-class PredictRequest(BaseModel):
-    message: str
-
-# Define the response schema
-class PredictResponse(BaseModel):
-    prediction: str
-    confidence: float
-
-# Global variables for model and vectorizer
-model = None
-vectorizer = None
-
-@app.on_event("startup")
-def load_model():
-    global model, vectorizer
+# Load model and vectorizer
+@st.cache_resource
+def load_components():
     if os.path.exists("model.joblib") and os.path.exists("vectorizer.joblib"):
         model = joblib.load("model.joblib")
         vectorizer = joblib.load("vectorizer.joblib")
+        return model, vectorizer
     else:
-        print("Warning: Model or vectorizer not found. Please run train.py first.")
+        return None, None
 
-@app.get("/")
-def read_root():
-    return FileResponse("public/index.html")
+model, vectorizer = load_components()
 
-@app.post("/predict", response_model=PredictResponse)
-def predict(request: PredictRequest):
-    if model is None or vectorizer is None:
-        raise HTTPException(status_code=503, detail="Model is not loaded. Ensure train.py has been run.")
+if model is None or vectorizer is None:
+    st.error("Model not found! Please run `python train.py` first to train the model.")
+else:
+    user_input = st.text_area("Enter your message:", height=150)
     
-    if not request.message.strip():
-        raise HTTPException(status_code=400, detail="Message cannot be empty.")
-
-    # Clean the message identically to training
-    cleaned_message = request.message.lower()
-    cleaned_message = re.sub(r'[^a-z\s]', '', cleaned_message)
-    cleaned_message = re.sub(r'\s+', ' ', cleaned_message).strip()
-
-    # Vectorize the input message
-    vec_message = vectorizer.transform([cleaned_message])
-    
-    # Predict the class (spam or ham)
-    prediction = model.predict(vec_message)[0]
-    
-    # Get the prediction probabilities
-    proba = model.predict_proba(vec_message)[0]
-    confidence = max(proba)
-    
-    return PredictResponse(prediction=prediction, confidence=confidence)
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    if st.button("Analyze Message"):
+        if not user_input.strip():
+            st.warning("Please enter a message to analyze.")
+        else:
+            # Clean the text identical to training
+            cleaned_message = user_input.lower()
+            cleaned_message = re.sub(r'[^a-z\s]', '', cleaned_message)
+            cleaned_message = re.sub(r'\s+', ' ', cleaned_message).strip()
+            
+            # Vectorize and Predict
+            vec_message = vectorizer.transform([cleaned_message])
+            prediction = model.predict(vec_message)[0]
+            proba = model.predict_proba(vec_message)[0]
+            confidence = max(proba)
+            
+            st.markdown("### Result")
+            if prediction == 'spam':
+                st.error(f"**🚨 SPAM DETECTED** (Confidence: {confidence*100:.1f}%)")
+            else:
+                st.success(f"**✅ SAFE MESSAGE (HAM)** (Confidence: {confidence*100:.1f}%)")
